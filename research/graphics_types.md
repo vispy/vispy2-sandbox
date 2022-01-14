@@ -8,6 +8,11 @@ The purpose of this document is to collect a list of types of graphics to suppor
 
 The properties listed here generally apply to the whole graphics object (a uniform, in GPU terms), but most of these could also be applied per-vertex.
 
+### Ideas / todo
+
+* Look at what primitives plotly provides.
+* Look at how the below relates to the minimal requirements to be a MPL backend.
+
 ## The graphics
 
 ### BaseGraphics
