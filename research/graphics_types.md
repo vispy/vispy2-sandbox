@@ -37,6 +37,10 @@ Properties:
 * edge_color
 * angle
 
+### Points
+
+A simpler flavor of points. Not sure if we need these - if you set the type to round and the edge_width to 0 you have the same thing.
+
 ### Line
 
 TODO: I'm confused about the difference between a Path and a Line in Datoviz.
@@ -47,10 +51,6 @@ Properties:
 
 * line_width
 * color
-
-### Points
-
-A simpler flavor of points. Not sure if we need these - if you set the type to round and the edge_width to 0 you have the same thing.
 
 ### Segments
 
@@ -81,9 +81,11 @@ Properties:
 * wireframe (bool)?
 * light parameters, or do we attach these to the scene?
 
-### TriangleStrip and TriangleFan
+### Something to draw triangles and rectangles
 
-Like mesh, but with different topology. Do we need them? Can we make this a `topology` prop of mesh?
+For bar charts, area plots and other things.
+
+Also e.g. for pie charts, you'd need a polygon. Although a mesh could also be used.
 
 ### Spheres
 
@@ -95,14 +97,6 @@ Properties:
 * color
 * light params
 
-### Image
-
-Properties:
-
-* data
-* clim
-* cmap
-
 ### Text
 
 Properties:
@@ -113,6 +107,14 @@ Properties:
 * align_x
 * align_y
 * angle
+
+### Image
+
+Properties:
+
+* data
+* clim
+* cmap
 
 ### Volume
 
