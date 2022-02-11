@@ -173,10 +173,11 @@ loop.create_task(init())
 run()
 
 
-with open("viz.json", "wt") as f:
-    f.write(json.dumps(commands, indent=4))
-with open("viz.toml", "wt") as f:
-    f.write(toml.dumps({"command": commands}))
+# with open("viz.json", "wt") as f:
+#     f.write(json.dumps(commands, indent=4))
+# with open("viz.toml", "wt") as f:
+#     f.write(toml.dumps({"command": commands}))
+
 
 if False:
     ## Interactively change the data
