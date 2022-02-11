@@ -1,0 +1,31 @@
+[[command]]
+action = "create_canvas"
+id = 1
+width = 400
+height = 400
+
+[[command]]
+action = "create_node"
+id = 2
+parent = 1
+t = [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,]
+
+[[command]]
+action = "create_buffer"
+id = 3
+format = "3xf4"
+size = 4
+
+[[command]]
+action = "upload_buffer"
+id = 3
+offset = 0
+data = [ [ 1, 0, 0,], [ 0, 1, 0,], [ 1, 1, 0,], [ 0, 0, 0,],]
+
+[[command]]
+action = "create_visual"
+id = 4
+type = "points"
+node = 2
+positions = 3
+
