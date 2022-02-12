@@ -1,0 +1,89 @@
+
+- create:
+    id: "#1"
+    type: Framebuffer
+    parameters:
+      width:   100 # Logical pixel width
+      height:  100 # Logical pixel height
+      ratio:     2 # screen pixel ratio (physical pixel / logical pixel)
+      dpi:     100 # dots per inch (logical size)
+
+- create:
+    id: "#2"
+    type: Renderer
+    parameters: {}
+
+- create:
+    id: "#3"
+    type: Viewport
+    parameters:
+      framebuffer: "#1"
+      x : 0
+      y : 0
+      width : 50
+      height : 50
+
+- create:
+    id: "#4"
+    type: Viewport
+    parameters:
+      framebuffer: "#1"
+      x : 50
+      y : 0
+      width : 50
+      height : 50
+
+- create:
+    id: "#5"
+    type: Viewport
+    parameters:
+      framebuffer: "#1"
+      x : 0
+      y : 50
+      width : 50
+      height : 50
+
+- create:
+    id: "#6"
+    type: Viewport
+    parameters:
+      framebuffer: "#1"
+      x : 50
+      y : 50
+      width : 50
+      height : 50
+
+- execute:
+    id: "#2"
+    action: clear
+    parameters:
+      viewport: "#3"
+      color: "#ff0000"
+
+- execute:
+    id: "#2"
+    action: clear
+    parameters:
+      viewport: "#4"
+      color: "#00ff00"
+
+- execute:
+    id: "#2"
+    action: clear
+    parameters:
+      viewport: "#5"
+      color: "#0000ff"
+
+- execute:
+    id: "#2"
+    action: clear
+    parameters:
+      viewport: "#6"
+      color: "#ffffff"
+
+- execute:
+    id: "#1"
+    action: render
+    parameters:
+      format: raw
+  
