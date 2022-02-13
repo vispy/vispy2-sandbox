@@ -13,10 +13,8 @@
     type: Viewport
     parameters:
       framebuffer: "#1"
-      x: 0
-      y: 0
-      width: 100
-      height: 100
+      extent: [0,0,100,100]
+      depth: 0
 
 - create:
     id: "#3"
@@ -30,7 +28,7 @@
       viewport: "#2"
       color: "#ffffff"
 
-- execute:
+- request:
     id: "#1"
     action: render
     parameters:

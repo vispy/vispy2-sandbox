@@ -31,9 +31,11 @@ class Framebuffer:
 
 
 class Viewport:
-    def __init__(self, framebuffer, x, y, width, height):
+    def __init__(self, framebuffer, extent, depth):
         self.framebuffer = framebuffer
-        self.viewport = x, y, width, height
+        self.extent = extent
+        self.depth = depth
+        x, y, width, height = self.extent
         self.axes = framebuffer.figure.add_axes([x / framebuffer.width,
                                                  y / framebuffer.height,
                                                  width / framebuffer.width,   
@@ -42,6 +44,7 @@ class Viewport:
         self.axes.set_ylim(0, height)
         self.axes.get_xaxis().set_visible(False)
         self.axes.get_yaxis().set_visible(False)
+        self.axes.zorder = depth 
         for position in ["top", "bottom", "left", "right"]:
             self.axes.spines[position].set_visible(False)
             
@@ -89,6 +92,7 @@ def parse(filename):
             actor_id = value["id"]
             params = re.sub(r"('#[0-9]+')", r"actors[\1]",
                             str(value["parameters"]))
+
             # Create command
             if key == "create":
                 atype = value["type"]
@@ -99,16 +103,22 @@ def parse(filename):
             elif key == "execute":
                 action = value["action"]
                 command = "actors['%s'].%s(**%s)" % (actor_id, action, params)
-                result = eval(command)
-                if result is not None:
-                    yield result
+                eval(command)
+
+            # Execute command
+            elif key == "request":
+                action = value["action"]
+                command = "actors['%s'].%s(**%s)" % (actor_id, action, params)
+                yield eval(command)
 
         
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
 
     # filename = "single-viewport.yaml"
+    # filename = "two-viewports.yaml"
     filename = "four-viewports.yaml"
+    
     for output in parse(filename): pass
 
     matplotlib.use('MacOSX')

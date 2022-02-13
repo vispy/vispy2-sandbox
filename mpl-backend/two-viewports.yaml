@@ -18,7 +18,7 @@
     type: Viewport
     parameters:
       framebuffer: "#1"
-      extent: [0,0,50,50]
+      extent: [0, 0, 75, 75]
       depth: 0
 
 - create:
@@ -26,24 +26,8 @@
     type: Viewport
     parameters:
       framebuffer: "#1"
-      extent: [50,0,50,50]
-      depth: 0
-
-- create:
-    id: "#5"
-    type: Viewport
-    parameters:
-      framebuffer: "#1"
-      extent: [0,50,50,50]
-      depth: 0
-
-- create:
-    id: "#6"
-    type: Viewport
-    parameters:
-      framebuffer: "#1"
-      extent: [50,50,50,50]
-      depth: 0
+      extent: [25, 25, 75, 75]
+      depth: 100
 
 - execute:
     id: "#2"
@@ -58,20 +42,6 @@
     parameters:
       viewport: "#4"
       color: "#00ff00"
-
-- execute:
-    id: "#2"
-    action: clear
-    parameters:
-      viewport: "#5"
-      color: "#0000ff"
-
-- execute:
-    id: "#2"
-    action: clear
-    parameters:
-      viewport: "#6"
-      color: "#ffffff"
 
 - request:
     id: "#1"
