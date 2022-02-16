@@ -7,6 +7,8 @@ import matplotlib
 import numpy as np
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+from command import Command
+
 
 class Framebuffer:
     def __init__(self, width, height, ratio=1, dpi=100):
@@ -14,6 +16,7 @@ class Framebuffer:
         self.height = height
         self.ratio = ratio
         self.dpi = dpi
+        plt.autoscale(False)
         self.figure = plt.figure(frameon=False,
                                  dpi=self.dpi)
         self.figure.set_size_inches(self.ratio * self.width / self.dpi,
@@ -56,76 +59,40 @@ class Renderer:
     def clear(self, viewport, color):
         viewport.axes.set_facecolor(color)
 
-    def point(self, viewport, x, y, color):
+    # def point(self, viewport, x, y, color):
+    #     dpi = viewport.framebuffer.figure.dpi
+    #     size = (72/dpi)**2
+    #     viewport.axes.scatter([x],
+    #                           [y],
+    #                           s=size,
+    #                           color=color,
+    #                           antialiased=True,
+    #                           snap=True)
+
+    def render_path(self, viewport, vertices, color):
         dpi = viewport.framebuffer.figure.dpi
-        size = (72/dpi)**2
-        viewport.axes.scatter([x],
-                              [y],
-                              s=size,
-                              color=color,
-                              antialiased=True)
-
-    def segment(self, viewport, x0, y0, x1, y1, color):
-        dpi = viewport.framebuffer.figure.dpi
-        viewport.axes.plot([x0, x1],
-                           [y0, y1],
-                           color = color,
-                           linewidth = 72/dpi,
-                           # antialiased = False,
-                           snap=True)
+        vertices = np.array(vertices)
+        viewport.axes.plot(vertices[:,0], vertices[:,1], color=color)
 
 
-# -----------------------------------------------------------------------------
 def parse(filename):
-
     # Read yaml file
     with open(filename, "r") as stream:
         try:
-            stack = yaml.safe_load(stream)
+            commands = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
     # Execute commands
-    actors = {}
-    for item in stack:
-        for key, value in item.items():
-            actor_id = value["id"]
-            params = re.sub(r"('#[0-9]+')", r"actors[\1]",
-                            str(value["parameters"]))
-
-            # Create command
-            if key == "create":
-                atype = value["type"]
-                command = "%s(**%s)" % (atype, params)
-                actors[actor_id] = eval(command)
-
-            # Execute command
-            elif key == "execute":
-                action = value["action"]
-                command = "actors['%s'].%s(**%s)" % (actor_id, action, params)
-                eval(command)
-
-            # Execute command
-            elif key == "request":
-                action = value["action"]
-                command = "actors['%s'].%s(**%s)" % (actor_id, action, params)
-                yield eval(command)
-
-        
-# -----------------------------------------------------------------------------
-if __name__ == "__main__":
-
-    # filename = "single-viewport.yaml"
-    # filename = "two-viewports.yaml"
-    filename = "four-viewports.yaml"
-    
-    for output in parse(filename): pass
-
-    matplotlib.use('MacOSX')
-    height,width,depth = output.shape
-    dpi = 100
-    fig = plt.figure(figsize = (width/dpi, height/dpi), dpi=dpi)
-    ax = fig.add_axes([0,0,1,1])
-    ax.imshow(output)
-    ax.set_axis_off()
-    plt.show()
+    objects = {}
+    for command in commands:
+        (name, content), *rest = command.items()
+        command = Command(name,
+                          content["object"],
+                          content["method"],
+                          **content["parameters"])
+        result = eval(command.call("objects"))
+        if name == Command.CREATE:
+            objects[content["object"]] = result
+        if name == Command.REQUEST:
+            yield result

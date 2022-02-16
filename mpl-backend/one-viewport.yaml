@@ -1,0 +1,76 @@
+- create:
+    object: "#1"
+    method: Framebuffer
+    parameters: 
+      width: 640
+      height: 480
+      ratio: 1
+      dpi: 100.0
+
+- create:
+    object: "#2"
+    method: Viewport
+    parameters: 
+      framebuffer: "#1"
+      extent: [0, 0, 640, 480]
+      depth: 0
+
+- create:
+    object: "#3"
+    method: Renderer
+    parameters: {}
+
+- execute:
+    object: "#3"
+    method: render_path
+    parameters: 
+      viewport: "#2"
+      vertices: [[0.0, 0.0], [640.0, 0.0], [640.0, 480.0], [0.0, 480.0], [0.0, 0.0]]
+      color: [1.0, 1.0, 1.0, 1.0]
+
+- execute:
+    object: "#3"
+    method: render_path
+    parameters: 
+      viewport: "#2"
+      vertices: [[80.0, 52.8], [576.0, 52.8], [576.0, 422.4], [80.0, 422.4], [80.0, 52.8]]
+      color: [1.0, 1.0, 0.0, 1.0]
+
+- execute:
+    object: "#3"
+    method: render_path
+    parameters: 
+      viewport: "#2"
+      vertices: [[80.0, 52.8], [80.0, 422.4]]
+      color: [0.0, 0.0, 0.0, 1.0]
+
+- execute:
+    object: "#3"
+    method: render_path
+    parameters: 
+      viewport: "#2"
+      vertices: [[576.0, 52.8], [576.0, 422.4]]
+      color: [0.0, 0.0, 0.0, 1.0]
+
+- execute:
+    object: "#3"
+    method: render_path
+    parameters: 
+      viewport: "#2"
+      vertices: [[80.0, 52.8], [576.0, 52.8]]
+      color: [0.0, 0.0, 0.0, 1.0]
+
+- execute:
+    object: "#3"
+    method: render_path
+    parameters: 
+      viewport: "#2"
+      vertices: [[80.0, 422.4], [576.0, 422.4]]
+      color: [0.0, 0.0, 0.0, 1.0]
+
+- request:
+    object: "#1"
+    method: render
+    parameters: 
+      format: "raw"
+

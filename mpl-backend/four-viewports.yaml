@@ -1,7 +1,7 @@
 
 - create:
-    id: "#1"
-    type: Framebuffer
+    object: "#1"
+    method: Framebuffer
     parameters:
       width:   100 # Logical pixel width
       height:  100 # Logical pixel height
@@ -9,73 +9,73 @@
       dpi:     100 # dots per inch (logical size)
 
 - create:
-    id: "#2"
-    type: Renderer
+    object: "#2"
+    method: Renderer
     parameters: {}
 
 - create:
-    id: "#3"
-    type: Viewport
+    object: "#3"
+    method: Viewport
     parameters:
       framebuffer: "#1"
       extent: [0,0,50,50]
       depth: 0
 
 - create:
-    id: "#4"
-    type: Viewport
+    object: "#4"
+    method: Viewport
     parameters:
       framebuffer: "#1"
       extent: [50,0,50,50]
       depth: 0
 
 - create:
-    id: "#5"
-    type: Viewport
+    object: "#5"
+    method: Viewport
     parameters:
       framebuffer: "#1"
       extent: [0,50,50,50]
       depth: 0
 
 - create:
-    id: "#6"
-    type: Viewport
+    object: "#6"
+    method: Viewport
     parameters:
       framebuffer: "#1"
       extent: [50,50,50,50]
       depth: 0
 
 - execute:
-    id: "#2"
-    action: clear
+    object: "#2"
+    method: clear
     parameters:
       viewport: "#3"
       color: "#ff0000"
 
 - execute:
-    id: "#2"
-    action: clear
+    object: "#2"
+    method: clear
     parameters:
       viewport: "#4"
       color: "#00ff00"
 
 - execute:
-    id: "#2"
-    action: clear
+    object: "#2"
+    method: clear
     parameters:
       viewport: "#5"
       color: "#0000ff"
 
 - execute:
-    id: "#2"
-    action: clear
+    object: "#2"
+    method: clear
     parameters:
       viewport: "#6"
       color: "#ffffff"
 
 - request:
-    id: "#1"
-    action: render
+    object: "#1"
+    method: render
     parameters:
       format: raw
   
