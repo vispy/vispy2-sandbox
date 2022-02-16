@@ -1,0 +1,73 @@
+- create:
+    id: 1
+    type: canvas
+    parameters:
+      width:   640 # Logical pixel width
+      height:  480 # Logical pixel height
+      ratio:     2 # screen pixel ratio (physical pixel / logical pixel)
+      dpi:     100 # dots per inch (logical size)
+      bgcolor: "#ffffff"
+
+- create:
+    id: 2
+    type: visual
+    parameters:
+      canvas: 1
+      type: point
+
+- create:
+    id: 100
+    type: array
+    name: pos
+    parameters:
+      ndim: 1
+      shape: 3
+      dtype: vec3
+
+- create:
+    id: 101
+    type: array
+    name: size
+    parameters:
+      ndim: 1
+      shape: 3
+      dtype: float
+
+- upload:
+    id: 100
+    name: pos
+    parameters:
+      data: [[-0.5, 0, 0], [+0, 0, 0], [+0.5, 0, 0]]
+
+- upload:
+    id: 101
+    name: size
+    parameters:
+      data: [50]
+
+- update:
+    id: 2
+    type: prop
+    parameters:
+      prop: pos
+      array: 100
+      offset: 0
+      shape: 3
+
+- update:
+    id: 2
+    type: prop
+    parameters:
+      prop: size
+      array: 101
+      offset: 0
+      shape: 3
+
+- draw:
+    id: 1
+    viewport: [0, 0, 640, 480]
+    visuals: [2]
+
+- render:
+    id: 1
+    format: png

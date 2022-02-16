@@ -86,6 +86,7 @@ The following **actions** are supported:
 * delete
 * resize
 * update
+* draw
 * upload
 * download
 * insert
@@ -99,6 +100,7 @@ The following **object types** are supported:
 
 * canvas
 * visual
+* array
 * prop
 * item
 * node
@@ -113,32 +115,63 @@ The **Client** has the responsibility of assigning unique IDs to all objects.
 
 ### Payloads
 
-#### Create board
+#### Create canvas
 
 * width (int32)
 * height (int32)
+* background_color (color)
 
 #### Create visual
 
-* board (id)
+* canvas (id)
 * type (enum)
 * node (id)
 
 #### Create node
 
-* board (id)
+* canvas (id)
 * parent (id)
 * transform_type (enum, only linear for now)
 * model (mat4)
 * view (mat4)
 * proj (mat4)
 
+#### Draw canvas
+
+* canvas(id)
+* viewport (x, y, width, height), in logical pixels
+* visuals (list of visual ids)
+
 #### Update prop
 
 * __visual (id)__
 * prop (enum)
-* item_offset (uvec3)
-* data (array 1D, 2D, or 3D)
+* array (id)
+* offset (uvec3)
+* shape (uvec3)
+
+#### Create array
+
+* __array (id)__
+* ndim (1, 2, or 3)
+* dtype (dtype)
+* shape (uint32)
+
+#### Resize array
+
+* __array (id)__
+* shape (uvec3)
+
+#### Delete array
+
+* __array (id)__
+
+#### Upload array
+
+* __array (id)__
+* offset (uvec3)
+* shape (uvec3)
+* data (1D, 2D, or 3D)
 
 #### Insert item
 
