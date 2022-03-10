@@ -1,6 +1,6 @@
 - create:
-    id: 1
     type: canvas
+    id: "my_canvas"
     parameters:
       width:   640 # Logical pixel width
       height:  480 # Logical pixel height
@@ -9,65 +9,96 @@
       bgcolor: "#ffffff"
 
 - create:
-    id: 2
     type: visual
+    id: "my_visual"
     parameters:
-      canvas: 1
+      canvas_id: "my_canvas"
       type: point
 
+
 - create:
-    id: 100
     type: array
-    name: pos
+    id: "array_pos"
     parameters:
       ndim: 1
       shape: 3
       dtype: vec3
 
 - create:
-    id: 101
     type: array
-    name: size
+    id: "array_color"
     parameters:
       ndim: 1
       shape: 3
-      dtype: float
+      dtype: cvec4
 
-- upload:
-    id: 100
-    name: pos
+- create:
+    type: array
+    id: "array_size"
+    parameters:
+      ndim: 1
+      shape: 3
+      dtype: float32
+
+
+- update:
+    type: array
+    id: "array_pos"
     parameters:
       data: [[-0.5, 0, 0], [+0, 0, 0], [+0.5, 0, 0]]
 
-- upload:
-    id: 101
-    name: size
+- update:
+    type: array
+    id: "array_color"
+    parameters:
+      data: [[255, 0, 0, 255], [0, 255, 0, 255], [0, 0, 255, 255]]
+
+- update:
+    type: array
+    id: "array_size"
     parameters:
       data: [50]
 
+
 - update:
-    id: 2
     type: prop
+    id: "my_visual"
     parameters:
       prop: pos
-      array: 100
+      array_id: "array_pos"
       offset: 0
       shape: 3
 
 - update:
-    id: 2
     type: prop
+    id: "my_visual"
     parameters:
       prop: size
-      array: 101
+      array_id: "array_size"
       offset: 0
       shape: 3
 
+- update:
+    type: visual
+    id: "my_visual"
+
+- begin_draw:
+    type: canvas
+    id: "my_canvas"
+
 - draw:
-    id: 1
-    viewport: [0, 0, 640, 480]
-    visuals: [2]
+    type: canvas
+    id: "my_canvas"
+    parameters:
+      viewport: [0, 0, 640, 480]
+      visuals: ["my_visual"]
+
+- end_draw:
+    type: canvas
+    id: "my_canvas"
 
 - render:
-    id: 1
-    format: png
+    type: canvas
+    id: "my_canvas"
+    parameters:
+      format: png
