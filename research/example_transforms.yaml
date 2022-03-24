@@ -57,11 +57,11 @@
     # NOTE: there will be a custom transformation when assigning this array to the visual's
     # position property
     parameters:
-      type: custom_linspace_pos
+      type: line
       x: [-1, +1]
       y: 0
       z: 0
-      count: 10
+      count: 10000
 
 - update:
     object: array
@@ -69,14 +69,14 @@
     parameters:
       type: custom_linspace
       range: [0, 1]
-      count: 10
+      count: 10000
 
 - update:
     object: array
     id: "array_size"
     parameters:
       type: direct
-      data: [50]  # if a single value, assumed uniform
+      data: [1]  # if a single value, assumed uniform
 
 
 
@@ -89,6 +89,7 @@
     parameters:
         # y = a * sin(2*pi * f * (t - phy))
         type: custom_sine
+        axis: y
         amplitude: .25
         frequency: 8
         phase: 0
