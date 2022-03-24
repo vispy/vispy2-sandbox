@@ -1,0 +1,155 @@
+- create:
+    object: canvas
+    id: "my_canvas"
+    parameters:
+      width:   640 # Logical pixel width
+      height:  480 # Logical pixel height
+      ratio:     2 # screen pixel ratio (physical pixel / logical pixel)
+      dpi:     100 # dots per inch (logical size)
+      bgcolor: "#ffffff"
+
+- create:
+    object: visual
+    id: "my_visual"
+    parameters:
+      canvas_id: "my_canvas"
+      type: point
+
+
+
+# Array creation
+# --------------
+
+- create:
+    object: array
+    id: "array_pos"
+    parameters:
+      ndim: 1
+      shape: 3
+      dtype: vec3
+
+- create:
+    object: array
+    id: "array_color"
+    parameters:
+      ndim: 1
+      shape: 3
+      dtype: float32  # there will be a colormap transformation
+
+- create:
+    object: array
+    id: "array_size"
+    parameters:
+      ndim: 1
+      shape: 1  # single uniform value
+      dtype: float32
+
+
+
+# Data updates and requests
+# -------------------------
+
+- update:
+    object: array
+    id: "array_pos"
+    # Custom data request asking {count} points linearly spaced between -1 and 1
+    # The target array will be automatically resized.
+    # NOTE: there will be a custom transformation when assigning this array to the visual's
+    # position property
+    parameters:
+      type: custom_linspace_pos
+      x: [-1, +1]
+      y: 0
+      z: 0
+      count: 10
+
+- update:
+    object: array
+    id: "array_color"  # uint8 values, will be transformed with a colormap
+    parameters:
+      type: custom_linspace
+      range: [0, 1]
+      count: 10
+
+- update:
+    object: array
+    id: "array_size"
+    parameters:
+      type: direct
+      data: [50]  # if a single value, assumed uniform
+
+
+
+# Transforms
+# ----------
+
+- create:
+    object: transform
+    id: mysine
+    parameters:
+        # y = a * sin(2*pi * f * (t - phy))
+        type: custom_sine
+        amplitude: .25
+        frequency: 8
+        phase: 0
+
+- create:
+    object: transform
+    id: mycmap
+    parameters:
+        # from [0, 1] to [0-255, 0-255, 0-255]
+        type: colormap
+        cmap: hsv
+
+
+
+# Props
+# -----
+
+- update:
+    object: prop
+    id: "my_visual"
+    parameters:
+      prop: pos
+      array_id: "array_pos"
+      offset: 0
+      shape: full
+      transforms: [mysine]
+
+- update:
+    object: prop
+    id: "my_visual"
+    parameters:
+      prop: color
+      array_id: "array_color"
+      offset: 0
+      shape: full
+      transforms: [mycmap]
+
+- update:
+    object: prop
+    id: "my_visual"
+    parameters:
+      prop: size
+      array_id: "array_size"
+      offset: 0
+      shape: full
+      transforms: []
+
+
+
+# Draw
+# ----
+
+- draw:
+    object: canvas
+    id: "my_canvas"
+    parameters:
+      viewport: [0, 0, 640, 480]
+      visuals: ["my_visual"]
+
+- render:
+    object: canvas
+    id: "my_canvas"
+    parameters:
+      format: png
