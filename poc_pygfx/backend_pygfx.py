@@ -6,10 +6,7 @@ from wgpu.gui.auto import WgpuCanvas, run
 import pygfx as gfx
 import numpy as np
 
-import json
-import yaml
-import toml
-
+import visp
 
 # todo: props like color
 
@@ -157,10 +154,8 @@ def arrray_from_size_and_format(size, format):
 
 cp = CommandParser()
 
-INPUT = "viz.yaml"
-
-with open(INPUT, "rt") as f:
-    commands = yaml.load(f, yaml.FullLoader)
+commands = visp.load("viz.yaml")
+visp.check_commands(commands, False)
 
 
 async def init():
@@ -172,11 +167,6 @@ loop = asyncio.get_event_loop()
 loop.create_task(init())
 run()
 
-
-# with open("viz.json", "wt") as f:
-#     f.write(json.dumps(commands, indent=4))
-# with open("viz.toml", "wt") as f:
-#     f.write(toml.dumps({"command": commands}))
 
 
 if False:

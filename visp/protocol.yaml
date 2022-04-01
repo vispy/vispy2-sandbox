@@ -1,0 +1,40 @@
+action: create_canvas
+id: id
+
+----
+# Definition of commands
+create_canvas:
+  id: types:id
+  width: int
+  height: int
+
+create_node:
+  id: types:id
+  parent: id:canvas|node
+  transform: list<float,16>
+
+create_buffer:
+  id: types:id
+  format: enum:format
+  size: int
+
+upload_buffer:
+  id = "types:id"
+  offset = "int"
+  data = "list"
+
+create_visual:
+  action = "create_visual"
+  id = "types:id"
+  type = "enum:visual_types"
+  node = "id:node"
+  positions = "id:buffer"
+
+# Definitions of enums and types
+
+enums:
+  format = ["f4", "2xf4", "3xf4", "4xf4"]
+  visual_types = ["points", "line"]
+
+types:
+  id = "int|str"

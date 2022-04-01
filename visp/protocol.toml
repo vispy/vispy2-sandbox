@@ -1,0 +1,60 @@
+# ----- First some meta definitions -----
+
+# The protocol consist of sending a series of commands. This can be a
+# static list or a stream, and can be serialized with any format (e.g.
+# toml, yaml, or json).
+#
+# Each command is a dictionary with at least the field "action". The
+# action defines the type of command. Depending on the action, the
+# command must have a specific set of fields. Each field must have a
+# specific type.
+
+
+# ----- How this spec if written -----
+
+# The spec is written in toml. Commands are written as they normally
+# are with toml, except that the values of the fields define the type.
+# Further, this spec also defines the enums that are allowed on specific
+# fields.
+
+
+# ----- Definition of the commands
+
+[[command]]
+action = "create_canvas"
+id = "int"
+width = "int"
+height = "int"
+
+[[command]]
+action = "create_node"
+id = "int"
+parent = "id:canvas|node"
+matrix = "list<16,number>"
+
+[[command]]
+action = "create_buffer"
+id = "int"
+format = "enum:buffer_formats"
+size = "int"
+
+[[command]]
+action = "upload_buffer"
+id = "id:buffer"
+offset = "int"
+data = "list"
+# TODO: we should also support arrays when we're not actually serializing
+
+[[command]]
+action = "create_visual"
+id = "int"
+type = "enum:visual_types"
+node = "id:node"
+positions = "id:buffer"
+
+
+# ----- Definitions of any enums
+
+[[enums]]
+buffer_formats = ["f4", "2xf4", "3xf4", "4xf4"]
+visual_types = ["points", "line"]
