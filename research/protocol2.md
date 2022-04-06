@@ -86,7 +86,7 @@ The list of transforms defines how data is transformed from the array to its fin
 
 ## Draw commands
 
-A draw command is sent only when it changes. The renderer is responsible for "caching" the active commands (for example, in a command buffer for Vulkan renderers).
+A draw command is sent only when the scene changes. The renderer is responsible for "caching" the active commands (for example, in a command buffer for Vulkan renderers).
 
 A draw command is characterized by:
 
