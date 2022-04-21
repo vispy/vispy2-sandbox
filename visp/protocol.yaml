@@ -1,34 +1,96 @@
-action: create_canvas
-id: id
+# Canvas
+# ------
 
-----
-# Definition of commands
-create_canvas:
-  id: types:id
-  width: int
-  height: int
+- action: create
+  timestamp: int/float
+  object:
+    type: canvas
+    id: str
+  parameters:
+    width: int # Physical pixel width
+    height: int # Physical pixel height
+    dpr: float
+    dpi: float # dots per inch (logical size)
+    background: vec4  # floats rgba
+    widget: ... is passed outside of the protocol?
+    offscreen: bool
 
-create_node:
-  id: types:id
-  parent: id:canvas|node
-  transform: list<float,16>
+- action: create
+  timestamp: int/float
+  object:
+    type: viewport
+    id: str
+  parameters:
+    canvas_id: str
+    x: int
+    y: int
+    width: int # Logical pixel width
+    height: int # Logical pixel height
+    background: vec4
 
-create_buffer:
-  id: types:id
-  format: enum:format
-  size: int
+# Visual
+# ------
 
-upload_buffer:
-  id = "types:id"
-  offset = "int"
-  data = "list"
+- action: create
+  timestamp: int/float
+  object:
+    type: visual
+    id: str
+  parameters:
+    canvas_id: str
+    type: str
+    params/flags: dict??
 
-create_visual:
-  action = "create_visual"
-  id = "types:id"
-  type = "enum:visual_types"
-  node = "id:node"
-  positions = "id:buffer"
+# Array
+# -----
+
+- action: create
+  timestamp: int/float
+  object:
+    type: array
+    id: str
+  parameters:
+    ndim: int
+    shape: list
+    dtype: enum/str?
+
+- action: update
+  timestamp: int/float
+  object:
+    type: array
+    id: str
+  parameters:
+    type: direct/custom/...
+    offset: list
+    shape: list
+    <type-specific>
+
+# Transforms
+# ----------
+
+- action: create
+  timestamp: int/float
+  object:
+    type: transform
+    id: str
+  parameters:
+    type: direct/custom/...
+    <type-specific>
+
+# Props
+# -----
+
+- action: update
+  timestamp: int/float
+  object:
+    type: prop
+    id: str
+  parameters:
+    type: enum
+    array_id: str
+    offset: list
+    shape: list
+    transforms: [list_ids]
 
 # Definitions of enums and types
 
