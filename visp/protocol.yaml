@@ -92,11 +92,33 @@
     shape: list
     transforms: [list_ids]
 
+# Draw
+# ----
+
+- action: draw
+  timestamp: int/float
+  object:
+    type: canvas
+    id: str
+  parameters:
+    viewport_id: str
+    visuals: <list of visual ids>
+
+- action: render
+  timestamp: int/float
+  object:
+    type: canvas
+    id: str
+  parameters:
+    x: int
+    y: int
+    width: int
+    height: int
+    format: png
+
+
 # Definitions of enums and types
 
 enums:
   format = ["f4", "2xf4", "3xf4", "4xf4"]
   visual_types = ["points", "line"]
-
-types:
-  id = "int|str"
