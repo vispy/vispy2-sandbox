@@ -11,8 +11,6 @@
     height: int # Physical pixel height
     dpr: float
     dpi: float # dots per inch (logical size)
-    background: vec4  # floats rgba
-    widget: ... is passed outside of the protocol?
     offscreen: bool
 
 - action: create
@@ -25,8 +23,20 @@
     x: int
     y: int
     width: int # Logical pixel width
-    height: int # Logical pixel height
-    background: vec4
+    height: int # Logical pixel height  
+
+- action: create
+  timestamp: int/float
+  object:
+    type: plot?
+    id: str
+  parameters:
+     visuals: visual ids
+     viewport: viewport-id
+     transforms: <list of transform ids>
+
+
+  
 
 # Visual
 # ------
@@ -83,7 +93,7 @@
 - action: update
   timestamp: int/float
   object:
-    type: prop
+    type: visual
     id: str
   parameters:
     type: enum
@@ -95,16 +105,7 @@
 # Draw
 # ----
 
-- action: draw
-  timestamp: int/float
-  object:
-    type: canvas
-    id: str
-  parameters:
-    viewport_id: str
-    visuals: <list of visual ids>
-
-- action: render
+- action: render  # i.e. screenshot
   timestamp: int/float
   object:
     type: canvas
