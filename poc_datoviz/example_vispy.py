@@ -17,10 +17,16 @@ Architecture.
 
 ### Remote application
 
+Client:
+
 -----------------------------------------------------
  (Python)   VisPy 2 high-level API
 -----------------------------------------------------
  (Python)   VisPy 2 protocol generator (API -> YAML)
+-----------------------------------------------------
+
+Server:
+
 -----------------------------------------------------
  (Python)   VisPy 2 protocol parser (YAML -> API)
 -----------------------------------------------------
@@ -147,6 +153,10 @@ class Visual:
             color = self._props.get('color', None)
             size = self._props.get('size', None)
 
+            assert pos
+            assert color
+            assert size
+
             # pos_arr = self._arrays[pos.array_id][0]
             # color_arr = self._arrays[color.array_id][0]
             # size_arr = self._arrays[size.array_id][0]
@@ -170,35 +180,6 @@ class Visual:
 
             return vbo
 
-    def draw(self, visuals, transforms=None, viewport=None):
-        if not visuals:
-            return
-
-        if not viewport:
-            viewport = (0, 0, 0, 0)
-
-        rst = self._rd._rst
-        cid = self.canvas._id
-
-        # Compute the VBO from the props, arrays, transforms, and upload it
-        vbo = self._get_vertex()
-        rst.upload_dat(VERTEX_DAT_ID, 0, vbo)
-
-        # Begin.
-        rst.record_begin(cid)
-
-        # Viewport.
-        rst.record_viewport(cid, *viewport)
-
-        # Draw the visuals.
-        for visual in visuals:
-
-            # Record the draw command.
-            rst.record_draw(cid, visual._id, 0, vbo.size)
-
-        # End
-        rst.record_end(cid)
-
 
 # -------------------------------------------------------------------------------------------------
 # Canvas
@@ -218,6 +199,35 @@ class Canvas:
 
     def visual(self, vtype):
         return Visual(self, vtype)
+
+    def draw(self, visuals, transforms=None, viewport=None):
+        if not visuals:
+            return
+
+        if not viewport or viewport == 'full':
+            viewport = (0, 0, 0, 0)
+
+        rst = self._rd._rst
+        cid = self._id
+
+        # Begin.
+        rst.record_begin(cid)
+
+        # Viewport.
+        rst.record_viewport(cid, *viewport)
+
+        # Draw the visuals.
+        for visual in visuals:
+
+            # Compute the VBO from the props, arrays, transforms, and upload it
+            vbo = visual._get_vertex()
+            rst.upload_dat(VERTEX_DAT_ID, 0, vbo)
+
+            # Record the draw command.
+            rst.record_draw(cid, visual._id, 0, vbo.size)
+
+        # End
+        rst.record_end(cid)
 
 
 # -------------------------------------------------------------------------------------------------
@@ -293,11 +303,22 @@ def main():
     v['color'] = color
     v['size'] = size
 
+    # if number of items = number of groups, update the groups
+    # if number of items = number of points, update the points
+    # if number of items = 1, update everything (uniform)
+
+    # v.assign(pos=pos, transforms=[...])
+
     # panzoom transform
     tr = PanZoom()
 
     # draw a list of visuals in a given viewport
-    v.draw([v], transforms=[tr])  # by default, use the full viewport
+    # by default, use the full viewport
+
+    # TODO: add Viewport object instead
+    # TODO: add collection to the protocol?
+    # TODO: beter separation between client and server in datoviz, better API
+    c.draw([v], transforms=[tr], viewport='full')
 
     # start the Datoviz event loop, which will process all pending requests
     r.run()
