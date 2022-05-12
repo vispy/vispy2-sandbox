@@ -46,7 +46,6 @@ Server:
 
 import logging
 from pathlib import Path
-from cv2 import CAP_OPENNI_VALID_DEPTH_MASK
 
 import numpy as np
 
@@ -121,21 +120,24 @@ class Visual:
     _vtype = None
 
     def __init__(self, parent, vtype):
-        self.canvas = parent  # canvas
+        self.client = parent  # client
         self._vtype = vtype
-        self._rd = parent._rd  # renderer
-        self._id = self._rd._id()
         self._props = {}
-        assert self._id
 
-        vtype_id = _VISUAL_TYPES.get(vtype)
+    def set_canvas(self, canvas):
+        assert canvas
+        self.canvas = canvas
+        self._rd = self.canvas._rd  # renderer
+        self._id = self._rd._id()
+        assert self._id
+        vtype_id = _VISUAL_TYPES.get(self._vtype)
         assert vtype_id
 
         self._rd._rst.create_graphics(
-            self.canvas._id, vtype_id, id=self._id, flags=3)
+            canvas._id, vtype_id, id=self._id, flags=3)
 
         # Create the visual-specific vertex buffer
-        if vtype == 'point':
+        if self._vtype == 'point':
             self._rd._rst.create_dat(
                 2, 3*(4*4+4*1+1*4), id=VERTEX_DAT_ID, flags=0)
             self._rd._rst.set_vertex(self._id, VERTEX_DAT_ID)
@@ -197,9 +199,6 @@ class Canvas:
         flags = 0
         self._rd._rst.create_canvas(width, height, id=self._id, flags=flags)
 
-    def visual(self, vtype):
-        return Visual(self, vtype)
-
     def draw(self, visuals, transforms=None, viewport=None):
         if not visuals:
             return
@@ -219,6 +218,10 @@ class Canvas:
         # Draw the visuals.
         for visual in visuals:
 
+            # HACK
+            if visual.canvas is None:
+                visual.set_canvas(self)
+
             # Compute the VBO from the props, arrays, transforms, and upload it
             vbo = visual._get_vertex()
             rst.upload_dat(VERTEX_DAT_ID, 0, vbo)
@@ -231,10 +234,10 @@ class Canvas:
 
 
 # -------------------------------------------------------------------------------------------------
-# Renderer
+# Client
 # -------------------------------------------------------------------------------------------------
 
-class Renderer:
+class Client:
     def __init__(self):
         self._rnd = dvz.Renderer(offscreen=False)
         self._rst = dvz.Requester()
@@ -250,6 +253,9 @@ class Renderer:
 
     def canvas(self, width, height):
         return Canvas(self, width, height)
+
+    def visual(self, vtype):
+        return Visual(self, vtype)
 
     def array(self, shape, dtype=None):
         return Array(shape, dtype=dtype)
@@ -278,20 +284,20 @@ class PanZoom:
 def main():
 
     # instantiate a Datoviz renderer
-    r = Renderer()
+    cl = Client()
 
     # enqueue a canvas creation request, and return a handle
-    c = r.canvas(800, 600)
+    c = cl.canvas(800, 600)
     # r.flush()
 
     # create a visual
-    v = c.visual('point')
+    v = cl.visual('point')
 
     # create a pos N*3 array
     N = 1000
-    pos = r.array((N, 3), dtype=np.float32)
-    color = r.array((N, 4), dtype=np.uint8)
-    size = r.array((N, 1), dtype=np.float32)
+    pos = cl.array((N, 3), dtype=np.float32)
+    color = cl.array((N, 4), dtype=np.uint8)
+    size = cl.array((N, 1), dtype=np.float32)
 
     # upload the data to the array
     pos[:] = np.random.normal(size=(N, 3), loc=0, scale=.25)
@@ -321,7 +327,7 @@ def main():
     c.draw([v], transforms=[tr], viewport='full')
 
     # start the Datoviz event loop, which will process all pending requests
-    r.run()
+    cl.run()
 
     """
 
@@ -346,7 +352,7 @@ def main():
 
 
     # Instantiate the renderer.
-    r = Renderer()
+    r = Client()
 
     # Attach the client to the renderer.
     r.attach(cl)
