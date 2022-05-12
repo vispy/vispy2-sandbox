@@ -1,116 +1,162 @@
 # Canvas
 # ------
 
-- action: create
+- action: create_canvas
   timestamp: int/float
-  object:
-    type: canvas
-    id: str
   parameters:
+    id: str
     width: int # Physical pixel width
     height: int # Physical pixel height
     dpr: float
     dpi: float # dots per inch (logical size)
     offscreen: bool
 
-- action: create
+- action: resize_canvas
   timestamp: int/float
-  object:
-    type: viewport
-    id: str
   parameters:
+    id: str
+    width: int # Physical pixel width
+    height: int # Physical pixel height
+
+- action: delete_canvas
+  timestamp: int/float
+  parameters:
+    id: str
+
+
+# Viewport
+# -------
+
+- action: create_viewport
+  timestamp: int/float
+  parameters:
+    id: str
     canvas_id: str
     x: int
     y: int
     width: int # Logical pixel width
-    height: int # Logical pixel height  
+    height: int # Logical pixel height
 
-- action: create
+- action: update_viewport
   timestamp: int/float
-  object:
-    type: plot?
-    id: str
   parameters:
-     visuals: visual ids
-     viewport: viewport-id
-     transforms: <list of transform ids>
+    id: str
+    x: int
+    y: int
+    width: int # Logical pixel width
+    height: int # Logical pixel height
+
+- action: delete_viewport
+  timestamp: int/float
+  parameters:
+    id: str
 
 
-  
+# Plot
+# -------
+
+- action: create_plot
+  timestamp: int/float
+  parameters:
+    id: str
+    visuals: visual ids
+    viewport: viewport-id
+    transforms: <list of transform ids>
+    visible: bool
+
+- action: update_plot
+  timestamp: int/float
+  parameters:
+    id: str
+    visuals: visual ids
+    viewport: viewport-id
+    transforms: <list of transform ids>
+    visible: bool
+
+- action: delete_plot
+  timestamp: int/float
+  parameters:
+    id: str
+
 
 # Visual
 # ------
 
-- action: create
+- action: create_visual
   timestamp: int/float
-  object:
-    type: visual
-    id: str
   parameters:
-    canvas_id: str
+    id: str
     type: str
-    params/flags: dict??
+    params/flags: dict
+
+- action: delete_visual
+  timestamp: int/float
+  parameters:
+    id: str
+
 
 # Array
 # -----
 
-- action: create
+- action: create_array
   timestamp: int/float
-  object:
-    type: array
-    id: str
   parameters:
+    id: str
     ndim: int
     shape: list
     dtype: enum/str?
 
-- action: update
+- action: update_array
   timestamp: int/float
-  object:
-    type: array
-    id: str
   parameters:
+    id: str
     type: direct/custom/...
     offset: list
     shape: list
-    <type-specific>
+
+- action: delete_array
+  timestamp: int/float
+  parameters:
+    id: str
+
 
 # Transforms
 # ----------
 
-- action: create
+- action: create_transform
   timestamp: int/float
-  object:
-    type: transform
-    id: str
   parameters:
+    id: str
     type: direct/custom/...
     <type-specific>
+
+- action: delete_transform
+  timestamp: int/float
+  parameters:
+    id: str
+
 
 # Props
 # -----
 
-- action: update
+- action: assign_prop
   timestamp: int/float
-  object:
-    type: visual
-    id: str
   parameters:
-    type: enum
+    visual_id: str
     array_id: str
+    type: enum
     offset: list
     shape: list
     transforms: [list_ids]
 
+
 # Draw
 # ----
 
-- action: render  # i.e. screenshot
+- action: screenshot
   timestamp: int/float
-  object:
-    type: canvas
-    id: str
   parameters:
+    canvas_id: str
     x: int
     y: int
     width: int
