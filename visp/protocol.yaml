@@ -1,167 +1,147 @@
+# Basic guidelines:
+#
+# - The spec is inspired by the jsonrpc spec (https://www.jsonrpc.org/specification).
+# - An id is always present (in jsonrpc only for requests, not for "notifications").
+# - A timestamp field is added for replay functionality.
+# - The method name fully defines the required/possible params.
+# - Some params are optional (especially for update commands).
+# - Commands that have a return value (async) start with "get" or "request".
+
+# So every command looks like this:
+- method: str
+  id: str
+  timestamp: float
+  params: dict
+
+# Return values (from the server) look like this:
+- result: dict
+  id: str  # matches the request id
+
+# Errors produced by the server look like this:
+- error:
+   code: int
+   message: str 
+   data: any  # optional
+  id: str  # matches a request id, or is null if the error does not relate to a command
+
+# ---------------
+
+# Proposal:
+# - Every object that can be modified has a properties param (another dict).
+# - These fields can be updated using:
+
+- method: update
+  params:
+    id: str  # id of the object
+    properties: dict  # subset of properties of that object
+
+# For data we need a separate update mechanic.
+
+# Any object that can be created, can also be deleted:
+
+- method: delete
+  params:
+    id: str
+
+# ----------------
+
+# In the dicts below we define the methods and their params. The id and timestamp fields are omitted for brevity.
+
 # Canvas
 # ------
 
-- action: create_canvas
-  timestamp: int/float
-  parameters:
+# An offscreen canvas that, whenever it renders, takes a screenshot and sends it to the client.
+# Intended for when server and client are different processes (possibly different machines).
+# The client will update the size as needed.
+- method: create_canvas_offscreen
+  params:
+    id: str  # object id
+    properties:
+      width: int # Physical pixel width
+      height: int # Physical pixel height
+      dpr: float
+      dpi: float # dots per inch (logical size)
+
+# Create an on-screen canvas (on the server).
+# The user can (probably) manipulate the size of the window via the OS.
+# The client can also update the size.
+# The server needs to keep the client informed about the size and dpr. 
+- method: create_canvas_window
+  params:
     id: str
-    width: int # Physical pixel width
-    height: int # Physical pixel height
-    dpr: float
-    dpi: float # dots per inch (logical size)
-    offscreen: bool
+    properties:
+      width: int # Physical pixel width
+      height: int # Physical pixel height
 
-- action: resize_canvas
-  timestamp: int/float
-  parameters:
+# Create a subwidget in a Qt application. The client cannot influence the size.
+# The server keeps the client up-to-date about size and dpi.
+- method: create_canvas_widget_qt
+  params:
     id: str
-    width: int # Physical pixel width
-    height: int # Physical pixel height
+    parent: any
 
-- action: delete_canvas
-  timestamp: int/float
-  parameters:
-    id: str
-
-
-# Viewport
-# -------
-
-- action: create_viewport
-  timestamp: int/float
-  parameters:
-    id: str
+- method: create_viewport
+  params:
     canvas_id: str
-    x: int
-    y: int
-    width: int # Logical pixel width
-    height: int # Logical pixel height
+    properties:
+      x: int
+      y: int
+      width: int # Logical pixel width
+      height: int # Logical pixel height  
 
-- action: update_viewport
-  timestamp: int/float
-  parameters:
-    id: str
-    x: int
-    y: int
-    width: int # Logical pixel width
-    height: int # Logical pixel height
-
-- action: delete_viewport
-  timestamp: int/float
-  parameters:
-    id: str
-
-
-# Plot
-# -------
-
-- action: create_plot
-  timestamp: int/float
-  parameters:
-    id: str
-    visuals: visual ids
-    viewport: viewport-id
-    transforms: <list of transform ids>
-    visible: bool
-
-- action: update_plot
-  timestamp: int/float
-  parameters:
-    id: str
-    visuals: visual ids
-    viewport: viewport-id
-    transforms: <list of transform ids>
-    visible: bool
-
-- action: delete_plot
-  timestamp: int/float
-  parameters:
-    id: str
+- method: create_plot  # todo: better name?
+  params:
+     visual_ids: visual ids
+     viewport_ids: viewport-id
+     transform_ids: <list of transform ids>
 
 
 # Visual
 # ------
 
-- action: create_visual
-  timestamp: int/float
-  parameters:
-    id: str
-    type: str
-    params/flags: dict
+- method: create_visual_points
+  params:
+    properties:
+      size: float
+      marker: str
 
-- action: delete_visual
-  timestamp: int/float
-  parameters:
-    id: str
+- method: create_visual_line
+  params:
+    properties:
+      thickness: float
 
 
 # Array
 # -----
 
-- action: create_array
-  timestamp: int/float
-  parameters:
-    id: str
+- method: create_array
+  params:
     ndim: int
     shape: list
     dtype: enum/str?
 
-- action: update_array
-  timestamp: int/float
-  parameters:
-    id: str
-    type: direct/custom/...
+- method: update_array_direct
+  params:
     offset: list
     shape: list
+    data: <base64>
 
-- action: delete_array
-  timestamp: int/float
-  parameters:
-    id: str
-
+- method: update_array_from_url
+  params:
+    offset: list
+    shape: list
+    url: str
 
 # Transforms
 # ----------
 
-- action: create_transform
-  timestamp: int/float
-  parameters:
-    id: str
-    type: direct/custom/...
-    <type-specific>
+- method: create_transform_matrix
+  params:
+    matix: array<f32,12>
 
-- action: delete_transform
-  timestamp: int/float
-  parameters:
-    id: str
-
-
-# Props
-# -----
-
-- action: assign_prop
-  timestamp: int/float
-  parameters:
-    visual_id: str
-    array_id: str
-    type: enum
-    offset: list
-    shape: list
-    transforms: [list_ids]
-
-
-# Draw
-# ----
-
-- action: screenshot
-  timestamp: int/float
-  parameters:
-    canvas_id: str
-    x: int
-    y: int
-    width: int
-    height: int
-    format: png
+- method: create_transform_somethingelse
+  params:
+    xx: ..
 
 
 # Definitions of enums and types
