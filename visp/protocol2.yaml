@@ -1,0 +1,215 @@
+# Basic guidelines:
+#
+# - The spec is inspired by the jsonrpc spec (https://www.jsonrpc.org/specification).
+# - An id is always present (in jsonrpc only for requests, not for "notifications").
+# - A timestamp field is added for replay functionality.
+# - The method name fully defines the required/possible params.
+# - Some params are optional (especially for update commands).
+# - Commands that have a return value (async) start with "get" or "request".
+
+# So every command looks like this:
+- method: str
+  id: str
+  timestamp: float
+  params: dict
+
+# Return values (from the server) look like this:
+- result: dict
+  id: str  # matches the request id
+
+# Errors produced by the server look like this:
+- error:
+   code: int
+   message: str 
+   data: any  # optional
+  id: str  # matches a request id, or is null if the error does not relate to a command
+
+# ---------------
+
+# Proposal:
+# - for every object we have a create method.
+# - each object gets an id.
+# - Fields that can be updated are in a properties dict.
+# - All objects can be updated and deleted using generic methods.
+
+- method: create_some_object
+  params:
+    id: str
+    properties: dict
+
+- method: update
+  params:
+    id: str  # id of the object
+    properties: dict  # subset of properties of that object
+
+- method: delete
+  params:
+    id: str
+  
+# Note: For data we need a separate update mechanic.
+
+# ----------------
+
+# In the dicts below we define the methods and their params. The id and timestamp fields are omitted for brevity.
+
+# Canvas
+# ------
+
+# Canvases are always managed by the client.
+
+# An offscreen canvas that, whenever it renders, takes a screenshot and sends it to the client.
+# Intended for when server and client are different processes (possibly different machines).
+# The client will update the size as needed.
+- method: create_canvas_offscreen
+  params:
+    id: str  # object id
+    properties:
+      width: int # Physical pixel width
+      height: int # Physical pixel height
+      dpr: float
+      dpi: float # dots per inch (logical size)
+
+# Create an on-screen canvas for an existing window/widget.
+# The client will update the size as needed.
+- method: create_canvas_for_window
+  params:
+    id: str
+    uitoolkit: str  # qt / wx ?  - we need to work this out
+    widget: widget  # server detect qt/wx, does some magic
+    properties:
+      width: int # Physical pixel width
+      height: int # Physical pixel height
+      dpr: float
+      dpi: float
+
+- method: create_viewport
+  params:
+    canvas_id: str
+    properties:
+      x: int
+      y: int
+      width: int
+      height: int
+
+- method: create_plot  # todo: better name
+  params:
+    id: str
+    viewport_id: str
+    properties:
+      visual_ids: <list of str>
+      transform_ids: <list of str>  # aka camera transform VP
+
+# Ask for a new render. Similar to QWidget.update()
+# On remote applicaton, this needs some throttling mechanism or something. TBD
+- method: draw
+  params:
+    plot_id: str
+
+
+# Visual
+# ------
+
+# Note: an array_view is a tuple (array_id, offset, size)
+
+- method: create_visual_points
+  params:
+    id: str
+    properties:
+      transform: transform_id
+      positions: array_view
+      positions: array_view
+      size: float | array_view
+      marker: enum:marker
+      color: color | array_view
+      size_attuantion: bool
+
+- method: create_visual_line
+  params:
+    id: str
+    properties:
+      transform: transform_id
+      colormap: transform_id
+      positions: array_view
+      thickness: float | array_view
+      color: color | array_view
+
+- method: create_mesh
+  params:
+    id: str
+    properties:
+      indices: array_view
+      positions: array_view
+      normals: array_view
+      texcoords: array_view
+      color: color | array_view
+      shading: enum:shading
+      transform: transform_id
+      colormap: transform_id
+      emissive: float
+      shininess: float
+      wireframe: bool
+      wireframe_thickness: bool
+  
+  - method: create_volume
+    params:
+      id: str
+      properties:
+        grid: array_id
+        colormap: transform_id
+        clim: list<f32,2>
+        
+- method: create_volume_slice
+    params:
+      id: str
+      properties:
+        grid: array_id
+        colormap: transform_id
+        clim: list<f32,2>
+        plane: list<f32,4>
+
+# Array
+# -----
+
+- method: create_array
+  params:
+    ndim: int
+    shape: list
+    dtype: enum:array  # not structured :)
+
+- method: update_array_direct
+  params:
+    offset: list
+    shape: list
+    data: bytes | base64
+
+- method: update_array_from_url
+  params:
+    offset: list
+    shape: list
+    url: str
+
+
+# Transforms
+# ----------
+
+- method: create_transform_matrix
+  params:
+    id: str
+    matix: array<f32,12>
+
+- method: create_transform_map
+  params:
+    id: str
+    array: array_id
+
+- method: create_transform_somethingelse
+  params:
+    id: str
+    xx: ..
+
+
+# Definitions of enums and types
+
+enums:
+  format = ["f4", "2xf4", "3xf4", "4xf4"]
+  visual_types = ["points", "line"]
