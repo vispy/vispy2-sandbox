@@ -8,26 +8,30 @@ from datetime import datetime
 
 # -----------------------------------------------------------------------------
 def command(method=None, record=None, output=None, check=None):
-    """Function decorator that records a new command and optionally checks for
-       argument types and write command to stdout."""
+    """
+    Function decorator that records a new command and optionally checks for
+    argument types, reccord the command and write it to stdout.
+    """
     
     def wrapper(func):
         def inner(self, *args, **kwargs):
             keys = func.__code__.co_varnames[1:]
             values = args
+
+            # Check parameter types
             if check or Command.check:
                 for key, value in zip(keys, values):
-                    if not isinstance(value, self.types[key]):
+                    if key in self.types.keys() and not isinstance(value, self.types[key]):
                         raise TypeError("Wrong type for parameter %s : %s" % (key, type(value)))
                 for key, value in kwargs.items():
-                    if not isinstance(value, self.types[key]):
+                    if key in self.types.keys() and not isinstance(value, self.types[key]):
                         raise TypeError("Wrong type for parameter %s : %s" % (key, type(value)))
-
             func(self, *args, **kwargs)
-
             methodname = func.__code__.co_name if method is None else method
             classname = self.__class__.__name__
             name = "%s/%s" % (classname, methodname) if methodname else classname
+
+            # Create command
             command = Command.write(self, name, *keys)
             if record or Command.record:
                 Command.commands.append(command)
@@ -35,8 +39,6 @@ def command(method=None, record=None, output=None, check=None):
                 print(command)
         return inner
     return wrapper
-
-
 
 # -----------------------------------------------------------------------------
 class Object:
@@ -50,6 +52,7 @@ class Object:
         if Object.record:
             Object.objects[self.id] = self
 
+# -----------------------------------------------------------------------------
 class Command:
 
     check = True
