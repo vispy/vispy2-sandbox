@@ -2,7 +2,6 @@
 # Graphic Server Protocol (GSP) — reference client implementation
 # Copyright 2022 Nicolas P. Rougier - BSD 2 Clauses licence
 # -----------------------------------------------------------------------------
-import sys
 import yaml
 import itertools
 from datetime import datetime
@@ -166,7 +165,7 @@ if __name__ == '__main__':
     # -----------------------
     Command.check = True
     Command.record = True
-    Command.output = sys.stdout
+    Command.output = True
     Object.record = True
     
     canvas = Canvas(512,512, 100, 1)
