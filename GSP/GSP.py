@@ -7,14 +7,11 @@ import base64
 import itertools
 from datetime import datetime
 from functools import wraps
-from typeguard import check_argument_types
 
 
 def command(method=None, record=None, output=None, encode=[]):
-    """
-    Function decorator that records a new command and optionally checks for
-    argument types, reccord the command and write it to stdout.
-    """
+    """Function decorator that create a command and optionally record it and/or write it
+    to stdout. """
 
     def wrapper(func):
 
@@ -70,9 +67,7 @@ class Command:
     @classmethod
     def encode(cls, data):
         return str(base64.b64encode(str(data).encode("utf-8")))
-        
 
-    
     @classmethod
     def write(cls, self, method, parameters):
         command_id = 1 + next(Command.id_counter)
@@ -104,12 +99,11 @@ class Command:
             getattr(globals[classname], method)(Object.objects[object_id], **parameters)
 
 
-def mode(mode="server", reset=True, record=None, output=None, check=None):
+def mode(mode="server", reset=True, record=None, output=None):
     "Set protocol in specified mode (server or client)."
 
     if reset:
         Object.objects = {}
-
     if mode == "client":
         Command.record = record if record is not None else True
         Command.output = output if output is not None else True
