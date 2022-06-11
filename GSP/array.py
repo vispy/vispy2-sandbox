@@ -19,9 +19,9 @@ class Array(Object):
         self.dtype = dtype
 
     @typechecked
-    @command("set_data", encode=["data"])
+    @command("set_data")
     def set_data(self, offset : int,
-                       data   : Union[list,tuple,np.array] ):
+                       data   : bytes ):
         pass
     
     
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     import GSP
     GSP.mode("client")
     array = Array( [3,3], "uint32")
-    array.set_data(0, np.arange(3))
+    array.set_data(0, np.arange(3).tobytes())
     
     
 
