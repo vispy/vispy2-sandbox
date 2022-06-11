@@ -13,10 +13,12 @@ class Array(Object):
     @typechecked
     @command("")
     def __init__(self, shape : Union[list,tuple],
-                       dtype : str):
+                       dtype : str,
+                       data  : bytes):
         Object.__init__(self)
         self.shape = shape
         self.dtype = dtype
+        self.data = data
 
     @typechecked
     @command("set_data")
@@ -30,8 +32,7 @@ if __name__ == '__main__':
     
     import GSP
     GSP.mode("client")
-    array = Array( [3,3], "uint32")
-    array.set_data(0, np.arange(3).tobytes())
+    array = Array( [3], "u4", np.arange(3,dtype=np.uint32).tobytes())
     
     
 

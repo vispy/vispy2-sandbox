@@ -9,9 +9,6 @@ import numpy as np
 from datetime import datetime
 from functools import wraps
 
-# TODO:
-#  Registered numpy_array_representer / numpy_array_constructor for yaml
-
 # From https://github.com/astropy/astropy/blob/main/astropy/io/misc/yaml.py
 def _ndarray_representer(dumper, obj):
     if not (obj.flags['C_CONTIGUOUS'] or obj.flags['F_CONTIGUOUS']):
@@ -93,10 +90,6 @@ class Command:
     commands = []
 
     @classmethod
-    def encode(cls, data):
-        return str(base64.b64encode(str(data).encode("utf-8")))
-
-    @classmethod
     def write(cls, self, method, parameters):
         command_id = 1 + next(Command.id_counter)
         timestamp = datetime.timestamp( datetime.now())
@@ -104,7 +97,7 @@ class Command:
                    "id" : command_id,
                    "timestamp" : timestamp,
                    "parameters" : parameters } ]
-        return yaml.dump(data, sort_keys=False)
+        return yaml.dump(data, default_flow_style=None, sort_keys=False)
 
     @classmethod
     def process(cls, command, globals=None, locals=None):
