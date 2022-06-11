@@ -2,20 +2,19 @@
 # Graphic Server Protocol (GSP) — reference implementation
 # Copyright 2022 Nicolas P. Rougier - BSD 2 Clauses licence
 # -----------------------------------------------------------------------------
+from typing import Union
 from GSP import Object, command
-    
+from typeguard import typechecked
+
 class Viewport(Object):
 
-    # Authorized types for class attributes
-    types = { "id" : (int,),
-              "canvas" : (int,),
-              "x": (float, int),
-              "y": (float, int),
-              "width": (float, int),
-              "height": (float, int) }
-
+    @typechecked
     @command("")
-    def __init__(self, canvas, x, y, width, height):
+    def __init__(self, canvas : int,
+                       x :      Union[int,float],
+                       y :      Union[int,float],
+                       width :  Union[int,float],
+                       height : Union[int,float]):
         Object.__init__(self)
         self.canvas = canvas
         self.x = x
@@ -23,13 +22,17 @@ class Viewport(Object):
         self.width = width
         self.height = height
 
+    @typechecked
     @command("set_position")
-    def set_position(self, x, y):
+    def set_position(self, x : Union[int,float],
+                           y : Union[int,float]):
         self.x = x
         self.y = y
 
+    @typechecked
     @command("set_size")
-    def set_size(self, width, height):
+    def set_size(self, width :  Union[int,float],
+                       height : Union[int,float]):
         self.width = width
         self.height = height
         

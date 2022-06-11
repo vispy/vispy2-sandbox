@@ -6,26 +6,23 @@ import yaml
 import base64
 import itertools
 from datetime import datetime
+from functools import wraps
+from typeguard import check_argument_types
 
-def command(method=None, record=None, output=None, check=None, encode=[]):
+
+def command(method=None, record=None, output=None, encode=[]):
     """
     Function decorator that records a new command and optionally checks for
     argument types, reccord the command and write it to stdout.
     """
 
     def wrapper(func):
+
+        @wraps(func)
         def inner(self, *args, **kwargs):
             keys = func.__code__.co_varnames[1:]
             values = args
-
-            # Check parameter types
-            if check or Command.check:
-                for key, value in zip(keys, values):
-                    if key in self.types.keys() and not isinstance(value, self.types[key]):
-                        raise TypeError("Wrong type for parameter %s : %s" % (key, type(value)))
-                for key, value in kwargs.items():
-                    if key in self.types.keys() and not isinstance(value, self.types[key]):
-                        raise TypeError("Wrong type for parameter %s : %s" % (key, type(value)))
+            
             func(self, *args, **kwargs)
 
             # Create command
@@ -65,7 +62,6 @@ class Object:
 
 class Command:
 
-    check = True
     record = True
     output = True
     id_counter = itertools.count()
@@ -115,12 +111,10 @@ def mode(mode="server", reset=True, record=None, output=None, check=None):
         Object.objects = {}
 
     if mode == "client":
-        command.check = check if check is not None else True
         Command.record = record if record is not None else True
         Command.output = output if output is not None else True
         Object.record = True
     else:
-        command.check = check if check is not None else False
         Command.record = record if record is not None else False
         Command.output = output if output is not None else False
         Object.record = False
