@@ -21,4 +21,6 @@ if __name__ == '__main__':
         GSP.process(command, globals(), locals())
     server_objects = GSP.objects()
 
-    print(f"{client_objects} = {server_objects}: {client_objects == server_objects}" )
+    print(f"Client: {client_objects}")
+    print(f"Server: {server_objects}")
+    print(f"Test result: {client_objects == server_objects}")

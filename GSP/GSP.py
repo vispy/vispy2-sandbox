@@ -3,10 +3,11 @@
 # Copyright 2022 Nicolas P. Rougier - BSD 2 Clauses licence
 # -----------------------------------------------------------------------------
 import yaml
+import base64
 import itertools
 from datetime import datetime
 
-def command(method=None, record=None, output=None, check=None):
+def command(method=None, record=None, output=None, check=None, encode=[]):
     """
     Function decorator that records a new command and optionally checks for
     argument types, reccord the command and write it to stdout.
@@ -26,12 +27,18 @@ def command(method=None, record=None, output=None, check=None):
                     if key in self.types.keys() and not isinstance(value, self.types[key]):
                         raise TypeError("Wrong type for parameter %s : %s" % (key, type(value)))
             func(self, *args, **kwargs)
-            methodname = func.__code__.co_name if method is None else method
-            classname = self.__class__.__name__
-            name = "%s/%s" % (classname, methodname) if methodname else classname
 
             # Create command
-            command = Command.write(self, name, *keys)
+            parameters = {"id": self.id}
+            for key, value in zip(keys,values):
+                if key in encode:
+                    parameters[key] = Command.encode(value)
+                else:
+                    parameters[key] = value
+            classname = self.__class__.__name__
+            methodname = func.__code__.co_name if method is None else method
+            name = "%s/%s" % (classname, methodname) if methodname else classname
+            command = Command.write(self, name, parameters)
             if record or Command.record:
                 Command.commands.append(command)
             if output or Command.output:
@@ -65,19 +72,23 @@ class Command:
     commands = []
 
     @classmethod
-    def write(cls, self, method, *args):
+    def encode(cls, data):
+        return str(base64.b64encode(str(data).encode("utf-8")))
+        
+
+    
+    @classmethod
+    def write(cls, self, method, parameters):
         command_id = 1 + next(Command.id_counter)
         timestamp = datetime.timestamp( datetime.now())
         data = [ { "method" : method,
                    "id" : command_id,
                    "timestamp" : timestamp,
-                   "parameters" : {key: getattr(self,key)
-                                   for key in ["id"] + list(args)}} ]
+                   "parameters" : parameters } ]
         return yaml.dump(data, sort_keys=False)
 
     @classmethod
     def process(cls, command, globals=None, locals=None):
-
         data = yaml.safe_load(command)[0]
         try:
             classname, method = data["method"].split("/")
