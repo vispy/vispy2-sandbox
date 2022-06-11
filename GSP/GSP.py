@@ -9,33 +9,6 @@ import numpy as np
 from datetime import datetime
 from functools import wraps
 
-# From https://github.com/astropy/astropy/blob/main/astropy/io/misc/yaml.py
-def _ndarray_representer(dumper, obj):
-    if not (obj.flags['C_CONTIGUOUS'] or obj.flags['F_CONTIGUOUS']):
-        obj = np.ascontiguousarray(obj)
-    if np.isfortran(obj):
-        obj = obj.T
-        order = 'F'
-    else:
-        order = 'C'
-    data_b64 = base64.b64encode(obj.tobytes())
-    out = dict(buffer=data_b64,
-               dtype=str(obj.dtype) if not obj.dtype.fields else obj.dtype.descr,
-               shape=obj.shape,
-               order=order)
-
-    return dumper.represent_mapping('!numpy.ndarray', out)
-
-def _ndarray_constructor(loader, node):
-    # Convert mapping to a dict useful for initializing ndarray.
-    # Need deep=True since for structured dtype, the contents
-    # include lists and tuples, which need recursion via
-    # construct_sequence.
-    map = loader.construct_mapping(node, deep=True)
-    map['buffer'] = base64.b64decode(map['buffer'])
-    return np.ndarray(**map)
-
-
 
 def command(method=None, record=None, output=None):
     """Function decorator that create a command and optionally record it and/or write it
@@ -123,10 +96,6 @@ class Command:
 def mode(mode="server", reset=True, record=None, output=None):
     "Set protocol in specified mode (server or client)."
 
-    # Temporaty, we need our own yaml file
-    yaml.add_representer(np.ndarray, _ndarray_representer)
-    yaml.add_constructor('!numpy.ndarray', _ndarray_constructor)
-    
     if reset:
         Object.objects = {}
     if mode == "client":
