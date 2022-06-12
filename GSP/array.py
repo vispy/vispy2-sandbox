@@ -11,11 +11,11 @@ class Array(Object):
 
     @typechecked
     @command("")
-    def __init__(self, shape : Union[list,tuple],
+    def __init__(self, shape : Union[int,list,tuple],
                        dtype : str,
                        data  : bytes):
         Object.__init__(self)
-        self.shape = list(shape)
+        self.shape = shape
         self.dtype = dtype
         self.data = data
         self._array = np.frombuffer(data, dtype=dtype).reshape(shape).copy()
