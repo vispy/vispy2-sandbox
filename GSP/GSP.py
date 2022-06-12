@@ -11,7 +11,7 @@ from functools import wraps
 
 
 def command(method=None, record=None, output=None):
-    """Function decorator that create a command and optionally record it and/or write it
+    """Function decorator that create a command and optionally record it and write it
     to stdout. """
 
     def wrapper(func):
@@ -31,10 +31,13 @@ def command(method=None, record=None, output=None):
             methodname = func.__code__.co_name if method is None else method
             name = "%s/%s" % (classname, methodname) if methodname else classname
             command = Command.write(self, name, parameters)
+            
             if record or Command.record:
                 Command.commands.append(command)
+                
             if output or Command.output:
                 print(command)
+                
         return inner
     return wrapper
 
@@ -64,6 +67,8 @@ class Command:
 
     @classmethod
     def write(cls, self, method, parameters):
+        """ Dump the given method and paramters as a yaml block. """
+        
         command_id = 1 + next(Command.id_counter)
         timestamp = datetime.timestamp( datetime.now())
         data = [ { "method" : method,
@@ -74,6 +79,8 @@ class Command:
 
     @classmethod
     def process(cls, command, globals=None, locals=None):
+        """ Process a yaml command and create or update the correspondng object. """
+        
         data = yaml.safe_load(command)[0]
         try:
             classname, method = data["method"].split("/")
