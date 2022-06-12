@@ -7,12 +7,21 @@ from typing import Union
 from GSP import OID, Object, command
 from typeguard import typechecked
 from array import Array
+from transform import Transform
 
-class Transform(Object):
-    def __init__(self):
-        Object.__init__(self)
+class TransformColormap(Transform):
+
+    @typechecked
+    @command("")
+    def __init__(self, values : Array,
+                       colormap : str):
+        Transform.__init__(self)
+        self.values = values
+        self.colormap = colormap
 
     def __repr__(self):
-        return f"Transform [id={self.id}]"
+        return f"Transform[Colormap] [id={self.id}]: {self.colormap}({self.values.id})"
+        
 
+    
     

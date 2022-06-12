@@ -133,6 +133,12 @@ class Command:
         
         command_id = CID()
         timestamp = datetime.timestamp( datetime.now())
+
+        # Replace objects by their id
+        for key, value in parameters.items():
+            if isinstance(value, Object):
+                parameters[key] = value.id
+        
         data = [ { "method" : method,
                    "id" : command_id,
                    "timestamp" : timestamp,
@@ -149,16 +155,19 @@ class Command:
         except ValueError:
             classname, method = data["method"], None
         parameters = data["parameters"]
-        
+        object_id = parameters["id"]
+        del parameters["id"]
+
+        # Resolve objects references
+        for key, value in parameters.items():
+            if isinstance(value, OID):
+                parameters[key] = Object.objects[value]
+
         if method is None:
-            object_id = parameters["id"]
-            del parameters["id"]
             object = globals[classname](**parameters)
             object.id = object_id
             Object.objects[object_id] = object
         else:
-            object_id = parameters["id"]
-            del parameters["id"]
             getattr(globals[classname], method)(Object.objects[object_id], **parameters)
 
 

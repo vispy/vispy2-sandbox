@@ -5,12 +5,13 @@
 from typing import Union
 from GSP import OID, Object, command
 from typeguard import typechecked
+from canvas import Canvas
 
 class Viewport(Object):
 
     @typechecked
     @command("")
-    def __init__(self, canvas : OID,
+    def __init__(self, canvas : Canvas,
                        x :      Union[int,float],
                        y :      Union[int,float],
                        width :  Union[int,float],

@@ -9,6 +9,12 @@ from typeguard import typechecked
 
 class Array(Object):
 
+    @classmethod
+    def from_numpy(cls, Z):
+        if (isinstance(Z, np.ndarray)):
+            return Array(list(Z.shape), Z.dtype.str, Z.tobytes())
+        raise ValueError(f"Unknown type for {Z}, cannot convert to Array")
+    
     @typechecked
     @command("")
     def __init__(self, shape : Union[int,list,tuple],

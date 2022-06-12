@@ -4,13 +4,14 @@
 # -----------------------------------------------------------------------------
 import GSP
 import numpy as np
-from transform import Transform
+from array import Array
 
 if __name__ == '__main__':
 
     GSP.mode("client", reset=True, output=False)
     # ------------------------------------------
-    array = Transform(np.eye(4,dtype=np.float32).tobytes())
+    array = Array.from_numpy(np.arange(3,dtype=np.uint32))
+    array.set_data(0, (1 + np.arange(3, dtype=np.uint32)).tobytes())
     client_objects = GSP.objects()
     
     GSP.mode("server", reset=True)

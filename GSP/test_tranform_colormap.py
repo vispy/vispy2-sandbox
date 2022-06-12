@@ -3,17 +3,18 @@
 # Copyright 2022 Nicolas P. Rougier - BSD 2 Clauses licence
 # -----------------------------------------------------------------------------
 import GSP
-from canvas import Canvas
-from viewport import Viewport
+import numpy as np
+from array import Array
+from transform_colormap import TransformColormap
 
 if __name__ == '__main__':
 
     GSP.mode("client", reset=True, output=False)
     # ------------------------------------------
-    canvas = Canvas(512,512, 100, 1, False)
-    viewport = Viewport(canvas, 0, 0, 512, 512)
+    values = Array.from_numpy(np.linspace(0, 1, 10, dtype=np.float32))
+    colormap = "Viridis"
+    TransformColormap(values, colormap)
     client_objects = GSP.objects()
-
     
     GSP.mode("server", reset=True)
     # ------------------------------------------
@@ -24,3 +25,4 @@ if __name__ == '__main__':
     print(f"Client: {client_objects}")
     print(f"Server: {server_objects}")
     print(f"Test result: {client_objects == server_objects}")
+

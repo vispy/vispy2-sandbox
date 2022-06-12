@@ -10,4 +10,4 @@ if __name__ == '__main__':
 
     GSP.mode("client")
     canvas = Canvas(512, 512, 100, 1, False)
-    viewport = Viewport(canvas.id, 0, 0, 512, 512)
+    viewport = Viewport(canvas, 0, 0, 512, 512)
