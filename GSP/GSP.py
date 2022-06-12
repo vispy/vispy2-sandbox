@@ -42,16 +42,47 @@ def command(method=None, record=None, output=None):
     return wrapper
 
 
-class ID(yaml.YAMLObject):
-    """ Object identifier. """
+class CID(yaml.YAMLObject):
+    """ Command identifier """
     
-    yaml_tag = "!ID"
+    yaml_tag = "!CID"
     yaml_loader = yaml.SafeLoader
     counter = itertools.count()
 
     def __init__(self, id=None):
         if id is None:
-            self.id = 1 + next(ID.counter)
+            self.id = 1 + next(CID.counter)
+        else:
+            self.id = int(id)
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return self.id
+
+    def __repr__(self):
+        return "%d" % self.id
+
+    @classmethod
+    def to_yaml(cls, representer, node):
+        return representer.represent_scalar(cls.yaml_tag,
+                                            u'{.id}'.format(node))
+
+    @classmethod
+    def from_yaml(cls, loader, node):
+        return cls(node.value)
+
+class OID(yaml.YAMLObject):
+    """ Object identifier """
+    
+    yaml_tag = "!OID"
+    yaml_loader = yaml.SafeLoader
+    counter = itertools.count()
+
+    def __init__(self, id=None):
+        if id is None:
+            self.id = 1 + next(OID.counter)
         else:
             self.id = int(id)
 
@@ -76,12 +107,11 @@ class ID(yaml.YAMLObject):
     
 class Object:
 
-    id_counter = itertools.count()
     record = True
     objects = {}
 
     def __init__(self):
-        self.id = ID() # 1 + next(Object.id_counter)
+        self.id = OID()
         if Object.record:
             Object.objects[self.id] = self
 
@@ -95,14 +125,13 @@ class Command:
 
     record = True
     output = True
-    id_counter = itertools.count()
     commands = []
 
     @classmethod
     def write(cls, self, method, parameters):
         """ Dump the given method and paramters as a yaml block. """
         
-        command_id = 1 + next(Command.id_counter)
+        command_id = CID()
         timestamp = datetime.timestamp( datetime.now())
         data = [ { "method" : method,
                    "id" : command_id,

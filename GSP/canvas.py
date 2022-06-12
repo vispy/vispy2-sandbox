@@ -3,7 +3,7 @@
 # Copyright 2022 Nicolas P. Rougier - BSD 2 Clauses licence
 # -----------------------------------------------------------------------------
 from typing import Union
-from GSP import ID, Object, command
+from GSP import OID, Object, command
 from typeguard import typechecked
 
 class Canvas(Object):
