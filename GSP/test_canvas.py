@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
     GSP.mode("client", reset=True, output=False)
     # ------------------------------------------
-    canvas = Canvas(0, 0, 0, 0)
+    canvas = Canvas(0, 0, 0, 0, False)
     canvas.set_size(512, 512)
     canvas.set_dpi(100)
     canvas.set_dpr(1)

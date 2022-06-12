@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     GSP.mode("client", reset=True, output=False)
     # ------------------------------------------
-    canvas = Canvas(512,512, 100, 1)
+    canvas = Canvas(512,512, 100, 1, False)
     viewport = Viewport(canvas.id, 0, 0, 512, 512)
     client_objects = GSP.objects()
 

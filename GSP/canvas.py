@@ -10,15 +10,17 @@ class Canvas(Object):
 
     @typechecked
     @command("")
-    def __init__(self, width :  int, 
-                       height : int,
-                       dpi :    Union[int,float],
-                       dpr :    Union[int,float]):
+    def __init__(self, width :     int, 
+                       height :    int,
+                       dpi :       Union[int,float],
+                       dpr :       Union[int,float],
+                       offscreen : bool):
         Object.__init__(self)
         self.width = width
         self.height = height
         self.dpi = dpi
         self.dpr = dpr
+        self.offscreen = offscreen
 
     @typechecked        
     @command("set_size")
