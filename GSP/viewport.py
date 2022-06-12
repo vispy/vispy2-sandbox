@@ -3,14 +3,14 @@
 # Copyright 2022 Nicolas P. Rougier - BSD 2 Clauses licence
 # -----------------------------------------------------------------------------
 from typing import Union
-from GSP import Object, command
+from GSP import ID, Object, command
 from typeguard import typechecked
 
 class Viewport(Object):
 
     @typechecked
     @command("")
-    def __init__(self, canvas : int,
+    def __init__(self, canvas : ID,
                        x :      Union[int,float],
                        y :      Union[int,float],
                        width :  Union[int,float],

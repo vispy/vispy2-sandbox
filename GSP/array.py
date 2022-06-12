@@ -4,7 +4,7 @@
 # -----------------------------------------------------------------------------
 import numpy as np
 from typing import Union
-from GSP import Object, command
+from GSP import ID, Object, command
 from typeguard import typechecked
 
 class Array(Object):

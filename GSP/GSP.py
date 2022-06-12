@@ -41,6 +41,39 @@ def command(method=None, record=None, output=None):
         return inner
     return wrapper
 
+
+class ID(yaml.YAMLObject):
+    """ Object identifier. """
+    
+    yaml_tag = "!ID"
+    yaml_loader = yaml.SafeLoader
+    counter = itertools.count()
+
+    def __init__(self, id=None):
+        if id is None:
+            self.id = 1 + next(ID.counter)
+        else:
+            self.id = int(id)
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __hash__(self):
+        return self.id
+
+    def __repr__(self):
+        return "%d" % self.id
+
+    @classmethod
+    def to_yaml(cls, representer, node):
+        return representer.represent_scalar(cls.yaml_tag,
+                                            u'{.id}'.format(node))
+
+    @classmethod
+    def from_yaml(cls, loader, node):
+        return cls(node.value)
+
+    
 class Object:
 
     id_counter = itertools.count()
@@ -48,7 +81,7 @@ class Object:
     objects = {}
 
     def __init__(self):
-        self.id = 1 + next(Object.id_counter)
+        self.id = ID() # 1 + next(Object.id_counter)
         if Object.record:
             Object.objects[self.id] = self
 
