@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     GSP.mode("client", reset=True, output=False)
     # ------------------------------------------
-    array = TransformMatrix(np.eye(4,dtype=np.float32).tobytes())
+    array = TransformMatrix.identity()
     client_objects = GSP.objects()
     
     GSP.mode("server", reset=True)

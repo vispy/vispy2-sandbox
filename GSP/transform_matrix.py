@@ -10,6 +10,12 @@ from transform import Transform
 
 class TransformMatrix(Transform):
 
+    # Convenience method, not part of the protocol
+    @classmethod
+    def identity(cls):
+        return TransformMatrix(np.eye(4, dtype="f4").tobytes())
+        
+    
     @typechecked
     @command("")
     def __init__(self, data  : bytes):
