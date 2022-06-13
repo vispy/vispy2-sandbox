@@ -18,7 +18,7 @@ class TransformMatrix(Transform):
     
     @typechecked
     @command("")
-    def __init__(self, data  : bytes):
+    def __init__(self, data : bytes):
         Transform.__init__(self)
         self.dtype = "f4"
         self.data = data

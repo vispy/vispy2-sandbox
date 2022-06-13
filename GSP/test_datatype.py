@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     GSP.mode("client", reset=True, output=False)
     # ------------------------------------------
-    datatype = Datatype("f4:x:1;f4:y:1;f4:z:1;f4:w:1")
+    datatype = Datatype("f4:x:1;f4:y:1;f4:z:1;f4:w:1;")
     client_objects = GSP.objects()
     
     GSP.mode("server", reset=True)

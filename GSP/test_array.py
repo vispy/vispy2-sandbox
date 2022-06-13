@@ -15,7 +15,7 @@ if __name__ == '__main__':
     dtype = Datatype("u4")
     data = np.arange(3,dtype=np.uint32).tobytes()
     array = Array(shape, dtype, data)
-    
+
     array.set_data(0, (1 + np.arange(3, dtype=np.uint32)).tobytes())
     client_objects = GSP.objects()
     
@@ -28,4 +28,9 @@ if __name__ == '__main__':
     print(f"Client: {client_objects}")
     print(f"Server: {server_objects}")
     print(f"Test result: {client_objects == server_objects}")
+
+
+#    Z_np = np.zeros(3, dtype=[("x","f4"),("y","f4"),("z","f4")])
+#    Z = Array.from_numpy(Z_np)
+#    print(Z["x"])
 

@@ -15,7 +15,7 @@ class Array(Object):
     def from_numpy(cls, Z):
         if (isinstance(Z, np.ndarray)):
             datatype = Datatype.from_numpy(Z.dtype)
-            shape = Z.shape
+            shape = list(Z.shape)
             data = Z.tobytes()
             return Array(shape, datatype, data)
         raise ValueError(f"Unknown type for {Z}, cannot convert to Array")
@@ -33,7 +33,7 @@ class Array(Object):
         else:
             self.datatype = Datatype(datatype)
         self.data = data
-        dtype = Datatype.to_numpy(datatype.datatype)
+        dtype = Datatype.to_numpy(self.datatype.datatype)
         self._array = np.frombuffer(data, dtype=dtype).reshape(shape).copy()
 
     @typechecked
@@ -54,4 +54,8 @@ class Array(Object):
         if not np.array_equal(self._array, other._array):
             return False
         return True
-    
+
+    # Convenience method, not part of the protocol
+    def __getitem__(self, key):
+        import array_view
+        return array_view.ArrayView(self, key)

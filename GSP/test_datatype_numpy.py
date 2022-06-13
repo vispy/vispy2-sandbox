@@ -10,13 +10,13 @@ if __name__ == '__main__':
 
     GSP.mode("client", reset=True, record=False, output=False)
     datatypes = {
-        "rgb":  Datatype("u1:r:1;u1:g:1;u1:b:1;"),
-        "rgba": Datatype("u1:r:1;u1:g:1;u1:b:1;u1:a:1;"),
-        "argb": Datatype("u1:a:1;u1:r:1;u1:g:1;u1:b:1;"),
+        "RGB":  Datatype("u1:r:1;u1:g:1;u1:b:1;"),
+        "RGBA": Datatype("u1:r:1;u1:g:1;u1:b:1;u1:a:1;"),
+        "ARGB": Datatype("u1:a:1;u1:r:1;u1:g:1;u1:b:1;"),
         
-        "rgb(f)":  Datatype("f4:r:1;f4:g:1;f4:b:1;"),
-        "rgba(f)": Datatype("f4:r:1;f4:g:1;f4:b:1;f4:a:1;"),
-        "argb(f)": Datatype("f4:a:1;f4:r:1;f4:g:1;f4:b:1;"),
+        "rgb":  Datatype("f4:r:1;f4:g:1;f4:b:1;"),
+        "rgba": Datatype("f4:r:1;f4:g:1;f4:b:1;f4:a:1;"),
+        "argb": Datatype("f4:a:1;f4:r:1;f4:g:1;f4:b:1;"),
 
         "ivec2": Datatype("i4::2;"),
         "ivec3": Datatype("i4::3;"),

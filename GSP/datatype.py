@@ -9,16 +9,21 @@ from typeguard import typechecked
 
 class Datatype(Object):
 
+    # Convenience method, not part of the protocol
     @classmethod
     def from_numpy(cls, dtype):
         datatype = ""
         dtype = str(dtype)
         if dtype.startswith("["):
             for item in eval(dtype):
-                iname, itype, isize = item
+                if len(item) == 2:
+                    iname, itype = item
+                    isize = 1
+                else:
+                    iname, itype, isize = item
+                    isize = np.prod(isize)
                 iname = iname.strip()
                 itype = itype.strip()
-                isize = np.prod(isize)
                 datatype += "%s:%s:%d;" % (itype,iname,isize)
         elif dtype.startswith("("):
             itype, isize = eval(dtype)
@@ -28,7 +33,7 @@ class Datatype(Object):
             datatype += "%s;" % (dtype)
         return datatype
 
-
+    # Convenience method, not part of the protocol
     @classmethod
     def to_numpy(cls, datatype):
         dtype = []
