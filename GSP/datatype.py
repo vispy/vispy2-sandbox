@@ -63,4 +63,5 @@ class Datatype(Object):
         Object.__init__(self)
         self.datatype = datatype
 
-
+    def __repr__(self):
+        return f"Datatype [id={self.id}]: {self.datatype}"

@@ -6,6 +6,7 @@ import numpy as np
 from typing import Union
 from GSP import OID, Object, command
 from typeguard import typechecked
+from datatype import Datatype
 
 class Array(Object):
 
@@ -13,19 +14,26 @@ class Array(Object):
     @classmethod
     def from_numpy(cls, Z):
         if (isinstance(Z, np.ndarray)):
-            return Array(list(Z.shape), Z.dtype.str, Z.tobytes())
+            datatype = Datatype.from_numpy(Z.dtype)
+            shape = Z.shape
+            data = Z.tobytes()
+            return Array(shape, datatype, data)
         raise ValueError(f"Unknown type for {Z}, cannot convert to Array")
 
     
     @typechecked
     @command("")
-    def __init__(self, shape : Union[int,list,tuple],
-                       dtype : str,
+    def __init__(self, shape : Union[int,list],
+                       datatype : Union[str,Datatype],
                        data  : bytes):
         Object.__init__(self)
         self.shape = shape
-        self.dtype = dtype
+        if isinstance(datatype, (Datatype,)):
+            self.datatype = datatype
+        else:
+            self.datatype = Datatype(datatype)
         self.data = data
+        dtype = Datatype.to_numpy(datatype.datatype)
         self._array = np.frombuffer(data, dtype=dtype).reshape(shape).copy()
 
     @typechecked
@@ -37,10 +45,10 @@ class Array(Object):
         self._array.ravel()[offset:offset+size] = data
 
     def __repr__(self):
-        return f"Array [id={self.id}]: {tuple(self.shape)}, {self.dtype}, {self._array}"
+        return f"Array [id={self.id}]: {tuple(self.shape)}, {self.datatype}, {self._array}"
         
     def __eq__(self, other):
-        for key in ("shape", "dtype"):
+        for key in ("shape", "datatype"):
             if getattr(self, key) != getattr(other, key):
                 return False
         if not np.array_equal(self._array, other._array):

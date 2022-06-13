@@ -5,12 +5,17 @@
 import GSP
 import numpy as np
 from array import Array
+from datatype import Datatype
 
 if __name__ == '__main__':
 
     GSP.mode("client", reset=True, output=False)
     # ------------------------------------------
-    array = Array.from_numpy(np.arange(3,dtype=np.uint32))
+    shape = [3,]
+    dtype = Datatype("u4")
+    data = np.arange(3,dtype=np.uint32).tobytes()
+    array = Array(shape, dtype, data)
+    
     array.set_data(0, (1 + np.arange(3, dtype=np.uint32)).tobytes())
     client_objects = GSP.objects()
     
