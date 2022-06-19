@@ -116,7 +116,11 @@ class Object:
             Object.objects[self.id] = self
 
     def __eq__(self, other):
-        for key in vars(self).keys():
+        if not type(self) == type(other):
+            return False
+        keys = list(vars(self).keys())
+        keys.remove("id")
+        for key in keys:
             if getattr(self, key) != getattr(other, key):
                 return False
         return True
@@ -127,6 +131,20 @@ class Command:
     output = True
     commands = []
 
+    # Convenience method, not part of the protocol
+    @classmethod
+    def equal(cls, commands1, commands2):
+        """ Test two sets of commands for equality"""
+        
+        l1 = list(commands1.values())
+        l2 = list(commands2.values())
+        try:
+            for item in l1:
+                l2.remove(item)
+        except ValueError:
+            return False
+        return not l2
+    
     @classmethod
     def write(cls, self, method, parameters):
         """ Dump the given method and paramters as a yaml block. """
@@ -147,7 +165,7 @@ class Command:
 
     @classmethod
     def process(cls, command, globals=None, locals=None):
-        """ Process a yaml command and create or update the correspondng object. """
+        """ Process a yaml command and create or update the corresponding object. """
         
         data = yaml.safe_load(command)[0]
         try:
